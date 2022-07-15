@@ -1,0 +1,39 @@
+name: CI build and test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: setup-docker
+        uses: docker-practice/actions-setup-docker@v1
+        with:
+          docker_version: 20.10.17
+      - name: Setup docker-compose
+        uses: KengoTODA/actions-setup-docker-compose@v1.0.9
+        with:    
+          version: 1.29.2
+      - name: START DOCKER
+        run: |
+          cd "${GITHUB_WORKSPACE}" && ./spm -init
+          
+      - name: TEST
+        run: |
+          cd "${GITHUB_WORKSPACE}" && ./spm test || echo "FAILED=test $FAILED" >> $GITHUB_ENV
+      - name: EVALUATE
+        run: |
+          # Check if $FAILED is NOT empty
+          if [ ! -z "$FAILED" ]; then echo "Failed at $FAILED" && exit 1; fi
+      
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./.build

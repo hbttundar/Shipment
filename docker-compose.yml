@@ -1,0 +1,118 @@
+# For more information: https://laravel.com/docs/spm
+version: "3"
+services:
+    ## web service #######################################################################################################
+    web:
+        build:
+            context: ./docker/web
+            args:
+                WWWGROUP: "${WWWGROUP}"
+                WWWUSER: "${WWWUSER}"
+                PHP_VERSION: "${PHP_VERSION}"
+                INSTALL_XDEBUG: "${INSTALL_XDEBUG}"
+                DEFAULT_WEB_SERVER: "${DEFAULT_WEB_SERVER}"
+                APP_ENV: "${APP_ENV}"
+        networks:
+            - spm
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - "${PROJECT_ROOT}:/var/www/html"
+            - "${VENDOR_ROOT}:/var/www/html/vendor"
+            - "${PHP_LOCAL_CONFIG}:/etc/php/${PHP_VERSION}/${PHP_CONFIG_FOLDER}/conf.d/override_php.ini"
+#            - "${PHP_LOCAL_CONFIG}:/etc/php/${PHP_VERSION}/${PHP_CLI_CONFIG_FOLDER}/conf.d/override_php.ini"
+            - "${PHP_LOCAL_CONFIG}:/etc/php/${PHP_VERSION}/${PHP_APACHE_CONFIG_FOLDER}/conf.d/override_php.ini"
+            - "${MSMTP_LOCAL_CONFIG}:/etc/msmtprc"
+        depends_on:
+            - database
+            - redis
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            PHP_IDE_CONFIG: "serverName=shipment.localhost"
+        container_name: ${WEB_CONTAINER_NAME}
+    ### hostmachine ######################################################################################################
+    hostmachine:
+        image: qoomon/docker-host
+        cap_add: [ "NET_ADMIN", "NET_RAW" ]
+        deploy:
+            resources:
+                limits:
+                    memory: 8M
+        restart: on-failure
+        networks:
+            - spm
+        container_name: ${HOSTMACHINE_CONTAINER_NAME}
+    ### composer #########################################################################################################
+    composer:
+        build:
+            context: ./docker/composer/
+        working_dir: /var/www/html/
+        volumes:
+            - "./:/var/www/html"
+        user: "${WWWUSER}"
+        networks:
+            - spm
+        container_name: ${COMPOSER_CONTAINER_NAME}
+    ### database #########################################################################################################
+    database:
+        image: "${DB_IMAGE}:${DB_VERSION}"
+        restart: "always"
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_SECRET}"
+        volumes:
+            - "database:/var/lib/mysql"
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-p${DB_SECRET}" ]
+            retries: 3
+            timeout: 5s
+        networks:
+            - spm
+        container_name: ${DB_CONTAINER_NAME}
+    ### postgres #########################################################################################################
+    #database:
+    #    image: ${DB_IMAGE}:${DB_VERSION:-13}-alpine
+    #    environment:
+    #        POSTGRES_DB: ${DB_NAME:-shipment}
+            # You should definitely change the password in production
+    #        POSTGRES_PASSWORD: ${DB_SECRET:-root}
+    #        POSTGRES_USER: ${DB_USER:-root}
+    #    volumes:
+    #        - "database:/var/lib/postgresql/data:rw"
+    ## redis service #####################################################################################################
+    redis:
+        image: "redis:alpine"
+        ports:
+            - "${FORWARD_REDIS_PORT:-6379}:6379"
+        volumes:
+            - "redis:/data"
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            retries: 3
+            timeout: 5s
+        networks:
+            - spm
+        container_name: ${REDIS_CONTAINER_NAME}
+    ## mailhog service ###################################################################################################
+    mailhog:
+        image: "mailhog/mailhog:latest"
+        ports:
+            - "${FORWARD_MAILHOG_PORT:-1025}:1025"
+            - "${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025"
+        networks:
+            - spm
+        container_name: ${MAIL_SERVICE_CONTAINER_NAME}
+
+networks:
+    spm:
+        driver: bridge
+volumes:
+    database:
+        driver: local
+    redis:
+        driver: local
+
+

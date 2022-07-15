@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "distance": 100000,
+    "time": 3,
+    "company": {
+      "name": "Ms. Pansy Tremblay",
+      "email": "tressa.mayert@yahoo.com"
+    },
+    "carrier": {
+      "name": "Onie Lowe",
+      "email": "maida.corwin@gmail.com"
+    },
+    "route": [
+      {
+        "stop_id": 250456,
+        "postcode": "19217",
+        "city": "Schlagsdorf",
+        "country": "DE"
+      },
+      {
+        "stop_id": 270605,
+        "postcode": "82418",
+        "city": "Riegsee",
+        "country": "DE"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "distance": 200000,
+    "time": 5,
+    "company": {
+      "name": "Sam Feil",
+      "email": "beau44@heidenreich.info"
+    },
+    "carrier": {
+      "name": "Christophe Rodriguez",
+      "email": "danial.romaguera@yahoo.com"
+    },
+    "route": [
+      {
+        "stop_id": 729402,
+        "postcode": "16918",
+        "city": "Freyenstein",
+        "country": "DE"
+      },
+      {
+        "stop_id": 96395,
+        "postcode": "86916",
+        "city": "Kaufering",
+        "country": "DE"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "distance": 300000,
+    "time": 5,
+    "company": {
+      "name": "Lesly Veum Jr.",
+      "email": "cbrakus@stracke.com"
+    },
+    "carrier": {
+      "name": "Myrtis Willms",
+      "email": "rbergstrom@walker.com"
+    },
+    "route": [
+      {
+        "stop_id": 430596,
+        "postcode": "99338",
+        "city": "Gossel",
+        "country": "DE"
+      },
+      {
+        "stop_id": 978007,
+        "postcode": "85774",
+        "city": "Unterf\u00f6hring",
+        "country": "DE"
+      }
+    ]
+  },
+  {
+      "id": 4,
+      "distance": 578970,
+      "time": 4,
+      "company": {
+        "name": "Prof. Maryjane Koepp",
+        "email": "lupe56@hansen.info"
+      },
+      "carrier": {
+        "name": "Parker Pfannerstill",
+        "email": "lemke.andreane@hotmail.com"
+      },
+      "route": [
+        {
+          "stop_id": 211215,
+          "postcode": "3096",
+          "city": "Werben",
+          "country": "DE"
+        },
+        {
+          "stop_id": 719836,
+          "postcode": "6896",
+          "city": "Reinsdorf",
+          "country": "DE"
+        }
+      ]
+    }
+]
